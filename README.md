@@ -98,7 +98,6 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 ## 💬 **Contact**
 For questions or feedback, reach out to the maintainer:
 - **GitHub**: [@Widnax](https://github.com/Widnax)
-- **Email**: (Add your email if public)
-
+- **Insta**: @gabriel.thol
 ---
 **✨ Empower your fertility journey—naturally, privately, and accurately. ✨**
