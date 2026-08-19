@@ -96,7 +96,14 @@ fun SytothApp() {
                     }
                     is SytothRoute.Chart -> {
                         val chartViewModel: ChartViewModel = viewModel(factory = ChartViewModel.Factory)
-                        ChartScreen(viewModel = chartViewModel)
+                        ChartScreen(
+                            viewModel = chartViewModel,
+                            onNavigateBack = {
+                                if (backstack.size > 1) {
+                                    backstack.removeAt(backstack.size - 1)
+                                }
+                            }
+                        )
                     }
                     else -> {}
                 }

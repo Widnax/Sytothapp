@@ -113,7 +113,13 @@ fun LoggingScreen(
                             onClick = { viewModel.updateMucusConsistency(consistency) },
                             selected = currentEntry.mucusConsistency == consistency
                         ) {
-                            Text(consistency.name.lowercase().replaceFirstChar { it.uppercase() })
+                            Text(
+                                when (consistency) {
+                                    MucusConsistency.EGG_WHITE -> "Egg white"
+                                    MucusConsistency.NONE -> "None"
+                                    else -> consistency.name.lowercase().replaceFirstChar { it.uppercase() }
+                                }
+                            )
                         }
                     }
                 }
@@ -129,7 +135,12 @@ fun LoggingScreen(
                             onClick = { viewModel.updateMucusSensation(sensation) },
                             selected = currentEntry.mucusSensation == sensation
                         ) {
-                            Text(sensation.name.lowercase().replaceFirstChar { it.uppercase() })
+                            Text(
+                                when (sensation) {
+                                    MucusSensation.NONE -> "None"
+                                    else -> sensation.name.lowercase().replaceFirstChar { it.uppercase() }
+                                }
+                            )
                         }
                     }
                 }

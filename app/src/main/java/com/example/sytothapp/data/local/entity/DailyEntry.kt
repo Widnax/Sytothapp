@@ -23,12 +23,12 @@ data class DailyEntry(
 
 @Serializable
 enum class MucusConsistency {
-    DRY, STICKY, CREAMY, EGG_WHITE
+    NONE, DRY, STICKY, CREAMY, EGG_WHITE
 }
 
 @Serializable
 enum class MucusSensation {
-    DRY, MOIST, WET, SLIPPERY
+    NONE, DRY, MOIST, WET, SLIPPERY
 }
 
 @Serializable
