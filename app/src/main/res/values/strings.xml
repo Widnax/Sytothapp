@@ -1,3 +1,69 @@
 <resources>
     <string name="app_name">Sytothapp</string>
+    <string name="settings_title">Settings</string>
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="french">French</string>
+    <string name="temperature_unit">Temperature Unit</string>
+    <string name="celsius">Celsius (°C)</string>
+    <string name="fahrenheit">Fahrenheit (°F)</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="export_data">Export Data</string>
+    <string name="back">Back</string>
+    <string name="debug_section">Debug/Testing</string>
+    <string name="seed_sample_data">Seed Sample Data</string>
+    <string name="sample_data_seeded">Sample data seeded successfully</string>
+    <string name="label_period">Period</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Sytoth Dashboard</string>
+    <string name="view_chart">View Chart</string>
+    <string name="no_entries">No entries yet. Start logging your cycle!</string>
+    <string name="go_to_daily_log">Go to Daily Log</string>
+    <string name="recent_entries">Recent Entries</string>
+    <string name="temperature_label">Temperature: %s</string>
+    <string name="mucus_label">Mucus: %1$s / %2$s</string>
+    <string name="disturbances_label">Disturbances: %s</string>
+
+    <!-- Chart -->
+    <string name="chart_title">Chart</string>
+    <string name="navigate_back">Navigate Back</string>
+    <string name="no_data_chart">No data available for charting.</string>
+    <string name="fertility_status">Fertility Status</string>
+    <string name="temp_shift">Temperature Shift: %s</string>
+    <string name="mucus_peak">Mucus Peak: %s</string>
+    <string name="peak_day_label">Peak Day: %s</string>
+    <string name="confirmed">Confirmed ✅</string>
+    <string name="not_detected">Not detected ❌</string>
+
+    <!-- Logging -->
+    <string name="daily_log_title">Daily Log - %s</string>
+    <string name="delete_log">Delete Log</string>
+    <string name="change_date">Change Date</string>
+    <string name="confirm">Confirm</string>
+    <string name="entry_type">Entry Type</string>
+    <string name="regular">Regular</string>
+    <string name="bbt_c">Basal Body Temperature (°C)</string>
+    <string name="bbt_f">Basal Body Temperature (°F)</string>
+    <string name="flow_level">Flow Level</string>
+    <string name="pain_level">Pain Level</string>
+    <string name="mucus_consistency">Mucus Consistency</string>
+    <string name="mucus_sensation">Mucus Sensation</string>
+    <string name="poor_sleep">Poor Sleep</string>
+    <string name="alcohol">Alcohol</string>
+    <string name="stress">Stress</string>
+    <string name="illness">Illness</string>
+    <string name="travel">Travel</string>
+    <string name="notes">Notes</string>
+    <string name="delete_dialog_title">Delete Log?</string>
+    <string name="delete_dialog_text">Are you sure you want to delete this entry? This action cannot be undone.</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="egg_white">Egg white</string>
+    <string name="none">None</string>
+    <string name="disturbances">Disturbances</string>
 </resources>

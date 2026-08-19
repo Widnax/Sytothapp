@@ -15,6 +15,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
@@ -22,9 +23,11 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sytothapp.R
 import com.example.sytothapp.data.local.entity.DailyEntry
 import com.example.sytothapp.data.local.entity.MucusConsistency
 import com.example.sytothapp.data.local.entity.MucusSensation
+import com.example.sytothapp.data.repository.TemperatureUnit
 import com.example.sytothapp.domain.model.FertilityEvaluation
 import com.example.sytothapp.domain.model.FertilityStatus
 import com.example.sytothapp.ui.theme.SytothappTheme
@@ -44,12 +47,12 @@ fun ChartScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Chart") },
+                title = { Text(stringResource(R.string.chart_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Navigate Back"
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 }
@@ -66,13 +69,14 @@ fun ChartScreen(
         ) {
             if (uiState.entries.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                    Text("No data available for charting.")
+                    Text(stringResource(R.string.no_data_chart))
                 }
             } else {
                 CycleChart(
                     entries = uiState.entries,
                     evaluation = uiState.evaluation,
                     dailyStatuses = uiState.dailyStatuses,
+                    temperatureUnit = uiState.temperatureUnit,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(400.dp)
@@ -91,6 +95,7 @@ fun CycleChart(
     entries: List<DailyEntry>,
     evaluation: FertilityEvaluation,
     dailyStatuses: List<com.example.sytothapp.domain.model.FertilityStatus>,
+    temperatureUnit: TemperatureUnit,
     modifier: Modifier = Modifier
 ) {
     val textMeasurer = rememberTextMeasurer()
@@ -99,8 +104,18 @@ fun CycleChart(
     val tempEntries = entries.filter { it.basalBodyTemperature != null }
     if (tempEntries.isEmpty()) return
 
-    val minTemp = (tempEntries.minOf { it.basalBodyTemperature!! } - 0.2).coerceAtMost(36.0)
-    val maxTemp = (tempEntries.maxOf { it.basalBodyTemperature!! } + 0.2).coerceAtLeast(37.5)
+    fun convertTemp(temp: Double): Double {
+        return if (temperatureUnit == TemperatureUnit.FAHRENHEIT) {
+            (temp * 9 / 5) + 32
+        } else {
+            temp
+        }
+    }
+
+    val minTemp = (tempEntries.minOf { convertTemp(it.basalBodyTemperature!!) } - 0.2)
+        .coerceAtMost(if (temperatureUnit == TemperatureUnit.FAHRENHEIT) 96.8 else 36.0)
+    val maxTemp = (tempEntries.maxOf { convertTemp(it.basalBodyTemperature!!) } + 0.2)
+        .coerceAtLeast(if (temperatureUnit == TemperatureUnit.FAHRENHEIT) 99.5 else 37.5)
     val tempRange = maxTemp - minTemp
 
     Canvas(modifier = modifier.background(theme.surfaceVariant.copy(alpha = 0.3f))) {
@@ -125,7 +140,7 @@ fun CycleChart(
         }
 
         // Draw Y-axis (Temperature)
-        val tempStep = 0.1
+        val tempStep = if (temperatureUnit == TemperatureUnit.FAHRENHEIT) 0.2 else 0.1
         var currentTemp = minTemp
         while (currentTemp <= maxTemp) {
             val y = (chartHeight - ((currentTemp - minTemp) / tempRange * chartHeight) + padding).toFloat()
@@ -157,7 +172,8 @@ fun CycleChart(
 
         // Draw Cover Line
         evaluation.coverLine?.let { coverLine ->
-            val y = (chartHeight - ((coverLine - minTemp) / tempRange * chartHeight) + padding).toFloat()
+            val convertedCoverLine = convertTemp(coverLine)
+            val y = (chartHeight - ((convertedCoverLine - minTemp) / tempRange * chartHeight) + padding).toFloat()
             drawLine(
                 color = theme.error,
                 start = Offset(padding, y),
@@ -172,8 +188,9 @@ fun CycleChart(
         var firstPoint = true
         entries.forEachIndexed { index, entry ->
             entry.basalBodyTemperature?.let { temp ->
+                val convertedTemp = convertTemp(temp)
                 val x = padding + index * stepX + stepX / 2
-                val y = (chartHeight - ((temp - minTemp) / tempRange * chartHeight) + padding).toFloat()
+                val y = (chartHeight - ((convertedTemp - minTemp) / tempRange * chartHeight) + padding).toFloat()
                 if (firstPoint) {
                     path.moveTo(x, y)
                     firstPoint = false
@@ -275,7 +292,7 @@ fun FertilitySummary(evaluation: FertilityEvaluation) {
             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                 Icon(Icons.Rounded.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Fertility Status", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.fertility_status), style = MaterialTheme.typography.titleMedium)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -287,10 +304,13 @@ fun FertilitySummary(evaluation: FertilityEvaluation) {
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            Text("Temperature Shift: ${if (evaluation.isConfirmedTemperatureShift) "Confirmed ✅" else "Not detected ❌"}")
-            Text("Mucus Peak: ${if (evaluation.isConfirmedMucusPeak) "Confirmed ✅" else "Not detected ❌"}")
+            val confirmed = stringResource(R.string.confirmed)
+            val notDetected = stringResource(R.string.not_detected)
+
+            Text(stringResource(R.string.temp_shift, if (evaluation.isConfirmedTemperatureShift) confirmed else notDetected))
+            Text(stringResource(R.string.mucus_peak, if (evaluation.isConfirmedMucusPeak) confirmed else notDetected))
             evaluation.peakDay?.let {
-                Text("Peak Day: ${it.format(DateTimeFormatter.ofPattern("MMM dd"))}")
+                Text(stringResource(R.string.peak_day_label, it.format(DateTimeFormatter.ofPattern("MMM dd"))))
             }
         }
     }
@@ -330,6 +350,7 @@ fun CycleChartPreview() {
                     entries = entries,
                     evaluation = evaluation,
                     dailyStatuses = dailyStatuses,
+                    temperatureUnit = TemperatureUnit.CELSIUS,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(400.dp)

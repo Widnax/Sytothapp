@@ -1,7 +1,7 @@
 package com.example.sytothapp
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,8 +12,11 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.rememberNavBackStack
+import com.example.sytothapp.data.repository.ThemeMode
 import com.example.sytothapp.ui.chart.ChartScreen
 import com.example.sytothapp.ui.chart.ChartViewModel
 import com.example.sytothapp.ui.dashboard.DashboardScreen
@@ -21,15 +24,26 @@ import com.example.sytothapp.ui.dashboard.DashboardViewModel
 import com.example.sytothapp.ui.logging.LoggingScreen
 import com.example.sytothapp.ui.logging.LoggingViewModel
 import com.example.sytothapp.ui.navigation.SytothRoute
+import com.example.sytothapp.ui.settings.SettingsScreen
+import com.example.sytothapp.ui.settings.SettingsViewModel
 import com.example.sytothapp.ui.theme.SytothappTheme
 import java.time.LocalDate
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SytothappTheme {
+            val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
+            val themeMode by settingsViewModel.themeMode.collectAsStateWithLifecycle()
+            
+            SytothappTheme(
+                darkTheme = when (themeMode) {
+                    ThemeMode.LIGHT -> false
+                    ThemeMode.DARK -> true
+                    ThemeMode.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme()
+                }
+            ) {
                 SytothApp()
             }
         }
@@ -48,7 +62,7 @@ fun SytothApp() {
     // Sync backstack with adaptive navigator
     LaunchedEffect(backstack.size) {
         val last = backstack.lastOrNull()
-        if (last is SytothRoute.Logging || last is SytothRoute.Chart) {
+        if (last is SytothRoute.Logging || last is SytothRoute.Chart || last is SytothRoute.Settings) {
             navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, last)
         } else {
             navigator.navigateTo(ListDetailPaneScaffoldRole.List)
@@ -72,6 +86,11 @@ fun SytothApp() {
                     onNavigateToChart = {
                         if (!backstack.contains(SytothRoute.Chart)) {
                             backstack.add(SytothRoute.Chart)
+                        }
+                    },
+                    onNavigateToSettings = {
+                        if (!backstack.contains(SytothRoute.Settings)) {
+                            backstack.add(SytothRoute.Settings)
                         }
                     }
                 )
@@ -98,6 +117,17 @@ fun SytothApp() {
                         val chartViewModel: ChartViewModel = viewModel(factory = ChartViewModel.Factory)
                         ChartScreen(
                             viewModel = chartViewModel,
+                            onNavigateBack = {
+                                if (backstack.size > 1) {
+                                    backstack.removeAt(backstack.size - 1)
+                                }
+                            }
+                        )
+                    }
+                    is SytothRoute.Settings -> {
+                        val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
+                        SettingsScreen(
+                            viewModel = settingsViewModel,
                             onNavigateBack = {
                                 if (backstack.size > 1) {
                                     backstack.removeAt(backstack.size - 1)

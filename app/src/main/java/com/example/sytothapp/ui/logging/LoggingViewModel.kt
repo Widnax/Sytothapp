@@ -7,13 +7,16 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.sytothapp.SytothApplication
 import com.example.sytothapp.data.local.entity.*
 import com.example.sytothapp.data.repository.CycleRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.example.sytothapp.data.repository.SettingsRepository
+import com.example.sytothapp.data.repository.TemperatureUnit
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class LoggingViewModel(private val repository: CycleRepository) : ViewModel() {
+class LoggingViewModel(
+    private val repository: CycleRepository,
+    private val settingsRepository: SettingsRepository
+) : ViewModel() {
 
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
@@ -25,6 +28,9 @@ class LoggingViewModel(private val repository: CycleRepository) : ViewModel() {
 
     private val _isExistingEntry = MutableStateFlow(false)
     val isExistingEntry: StateFlow<Boolean> = _isExistingEntry.asStateFlow()
+
+    val temperatureUnit: StateFlow<TemperatureUnit> = settingsRepository.temperatureUnit
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TemperatureUnit.CELSIUS)
 
     init {
         loadEntry(LocalDate.now())
@@ -136,7 +142,7 @@ class LoggingViewModel(private val repository: CycleRepository) : ViewModel() {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as SytothApplication
-                return LoggingViewModel(application.repository) as T
+                return LoggingViewModel(application.repository, application.settingsRepository) as T
             }
         }
     }

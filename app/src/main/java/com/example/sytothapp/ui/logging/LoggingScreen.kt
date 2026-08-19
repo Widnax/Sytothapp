@@ -14,11 +14,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.sytothapp.R
 import com.example.sytothapp.data.local.entity.*
+import com.example.sytothapp.data.repository.TemperatureUnit
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -35,6 +38,7 @@ fun LoggingScreen(
     val entry by viewModel.entry.collectAsStateWithLifecycle()
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
     val isExistingEntry by viewModel.isExistingEntry.collectAsStateWithLifecycle()
+    val temperatureUnit by viewModel.temperatureUnit.collectAsStateWithLifecycle()
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -46,23 +50,23 @@ fun LoggingScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Daily Log - ${selectedDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy"))}") },
+                title = { Text(stringResource(R.string.daily_log_title, selectedDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")))) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Navigate Back"
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 },
                 actions = {
                     if (isExistingEntry) {
                         IconButton(onClick = { showDeleteDialog = true }) {
-                            Icon(Icons.Rounded.Delete, contentDescription = "Delete Log")
+                            Icon(Icons.Rounded.Delete, contentDescription = stringResource(R.string.delete_log))
                         }
                     }
                     IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Default.CalendarToday, contentDescription = "Change Date")
+                        Icon(Icons.Default.CalendarToday, contentDescription = stringResource(R.string.change_date))
                     }
                 }
             )
@@ -74,7 +78,7 @@ fun LoggingScreen(
                     onNavigateBack()
                 }
             ) {
-                Icon(Icons.Rounded.Check, contentDescription = "Confirm")
+                Icon(Icons.Rounded.Check, contentDescription = stringResource(R.string.confirm))
             }
         },
         modifier = modifier
@@ -86,28 +90,8 @@ fun LoggingScreen(
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                // BBT
-                var tempText by remember(currentEntry.basalBodyTemperature) {
-                    mutableStateOf(currentEntry.basalBodyTemperature?.toString() ?: "")
-                }
-                OutlinedTextField(
-                    value = tempText,
-                    onValueChange = {
-                        tempText = it
-                        val temp = it.toDoubleOrNull()
-                        if (temp != null || it.isEmpty()) {
-                            viewModel.updateTemperature(temp)
-                        }
-                    },
-                    label = { Text("Basal Body Temperature (°C)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Period Toggle
-                Text("Entry Type", style = MaterialTheme.typography.titleMedium)
+                // Period Toggle (Moved to top)
+                Text(stringResource(R.string.entry_type), style = MaterialTheme.typography.titleMedium)
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -118,22 +102,66 @@ fun LoggingScreen(
                         onClick = { viewModel.updateIsPeriod(false) },
                         selected = !currentEntry.isPeriod
                     ) {
-                        Text("Regular")
+                        Text(stringResource(R.string.regular))
                     }
                     SegmentedButton(
                         shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
                         onClick = { viewModel.updateIsPeriod(true) },
                         selected = currentEntry.isPeriod
                     ) {
-                        Text("Period")
+                        Text(stringResource(R.string.label_period))
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                if (!currentEntry.isPeriod) {
+                    // BBT (Hidden when Period is selected)
+                    val displayTemp = currentEntry.basalBodyTemperature?.let {
+                        if (temperatureUnit == TemperatureUnit.FAHRENHEIT) {
+                            (it * 9 / 5) + 32
+                        } else {
+                            it
+                        }
+                    }
+
+                    var tempText by remember(displayTemp) {
+                        mutableStateOf(displayTemp?.let { String.format("%.2f", it) } ?: "")
+                    }
+
+                    OutlinedTextField(
+                        value = tempText,
+                        onValueChange = {
+                            tempText = it
+                            val inputTemp = it.toDoubleOrNull()
+                            if (inputTemp != null || it.isEmpty()) {
+                                val tempInCelsius =
+                                    if (inputTemp != null && temperatureUnit == TemperatureUnit.FAHRENHEIT) {
+                                        (inputTemp - 32) * 5 / 9
+                                    } else {
+                                        inputTemp
+                                    }
+                                viewModel.updateTemperature(tempInCelsius)
+                            }
+                        },
+                        label = {
+                            Text(
+                                if (temperatureUnit == TemperatureUnit.FAHRENHEIT)
+                                    stringResource(R.string.bbt_f)
+                                else
+                                    stringResource(R.string.bbt_c)
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
                 if (currentEntry.isPeriod) {
                     // Flow Level
-                    Text("Flow Level", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.flow_level), style = MaterialTheme.typography.titleMedium)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -163,7 +191,7 @@ fun LoggingScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Pain Level
-                    Text("Pain Level", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.pain_level), style = MaterialTheme.typography.titleMedium)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -191,7 +219,7 @@ fun LoggingScreen(
                     }
                 } else {
                     // Mucus Consistency
-                    Text("Mucus Consistency", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.mucus_consistency), style = MaterialTheme.typography.titleMedium)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -211,8 +239,8 @@ fun LoggingScreen(
                                 ) {
                                     Text(
                                         text = when (consistency) {
-                                            MucusConsistency.EGG_WHITE -> "Egg white"
-                                            MucusConsistency.NONE -> "None"
+                                            MucusConsistency.EGG_WHITE -> stringResource(R.string.egg_white)
+                                            MucusConsistency.NONE -> stringResource(R.string.none)
                                             else -> consistency.name.lowercase()
                                                 .replaceFirstChar { it.uppercase() }
                                         },
@@ -229,7 +257,7 @@ fun LoggingScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Mucus Sensation
-                    Text("Mucus Sensation", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.mucus_sensation), style = MaterialTheme.typography.titleMedium)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -249,7 +277,7 @@ fun LoggingScreen(
                                 ) {
                                     Text(
                                         text = when (sensation) {
-                                            MucusSensation.NONE -> "None"
+                                            MucusSensation.NONE -> stringResource(R.string.none)
                                             else -> sensation.name.lowercase()
                                                 .replaceFirstChar { it.uppercase() }
                                         },
@@ -266,22 +294,28 @@ fun LoggingScreen(
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // Disturbances
-                    Text("Disturbances", style = MaterialTheme.typography.titleMedium)
-                    val commonDisturbances = listOf("Poor Sleep", "Alcohol", "Stress", "Illness", "Travel")
-                    commonDisturbances.forEach { disturbance ->
+                    Text(stringResource(R.string.disturbances), style = MaterialTheme.typography.titleMedium)
+                    val commonDisturbances = mapOf(
+                        "Poor Sleep" to R.string.poor_sleep,
+                        "Alcohol" to R.string.alcohol,
+                        "Stress" to R.string.stress,
+                        "Illness" to R.string.illness,
+                        "Travel" to R.string.travel
+                    )
+                    commonDisturbances.forEach { (key, resId) ->
                         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             Checkbox(
-                                checked = currentEntry.disturbances.contains(disturbance),
+                                checked = currentEntry.disturbances.contains(key),
                                 onCheckedChange = { checked ->
                                     val newList = if (checked) {
-                                        currentEntry.disturbances + disturbance
+                                        currentEntry.disturbances + key
                                     } else {
-                                        currentEntry.disturbances - disturbance
+                                        currentEntry.disturbances - key
                                     }
                                     viewModel.updateDisturbances(newList)
                                 }
                             )
-                            Text(disturbance, modifier = Modifier.padding(start = 8.dp))
+                            Text(stringResource(resId), modifier = Modifier.padding(start = 8.dp))
                         }
                     }
                 }
@@ -292,7 +326,7 @@ fun LoggingScreen(
                 OutlinedTextField(
                     value = currentEntry.notes,
                     onValueChange = { viewModel.updateNotes(it) },
-                    label = { Text("Notes") },
+                    label = { Text(stringResource(R.string.notes)) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3
                 )
@@ -313,7 +347,7 @@ fun LoggingScreen(
                         }
                         showDatePicker = false
                     }) {
-                        Text("OK")
+                        Text(stringResource(R.string.ok))
                     }
                 }
             ) {
@@ -325,8 +359,8 @@ fun LoggingScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Log?") },
-            text = { Text("Are you sure you want to delete this entry? This action cannot be undone.") },
+            title = { Text(stringResource(R.string.delete_dialog_title)) },
+            text = { Text(stringResource(R.string.delete_dialog_text)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -335,12 +369,12 @@ fun LoggingScreen(
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

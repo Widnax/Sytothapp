@@ -1,0 +1,69 @@
+<resources>
+    <string name="app_name">Sytothapp</string>
+    <string name="settings_title">Paramètres</string>
+    <string name="language">Langue</string>
+    <string name="english">Anglais</string>
+    <string name="french">Français</string>
+    <string name="temperature_unit">Unité de température</string>
+    <string name="celsius">Celsius (°C)</string>
+    <string name="fahrenheit">Fahrenheit (°F)</string>
+    <string name="theme">Thème</string>
+    <string name="theme_system">Par défaut du système</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
+    <string name="export_data">Exporter les données</string>
+    <string name="back">Retour</string>
+    <string name="debug_section">Débogage / Test</string>
+    <string name="seed_sample_data">Générer des données de test</string>
+    <string name="sample_data_seeded">Données de test générées avec succès</string>
+    <string name="label_period">Règles</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Tableau de bord Sytoth</string>
+    <string name="view_chart">Voir le graphique</string>
+    <string name="no_entries">Aucune entrée pour le moment. Commencez à enregistrer votre cycle !</string>
+    <string name="go_to_daily_log">Aller au journal quotidien</string>
+    <string name="recent_entries">Entrées récentes</string>
+    <string name="temperature_label">Température : %s</string>
+    <string name="mucus_label">Glaire : %1$s / %2$s</string>
+    <string name="disturbances_label">Perturbations : %s</string>
+
+    <!-- Chart -->
+    <string name="chart_title">Graphique</string>
+    <string name="navigate_back">Retour</string>
+    <string name="no_data_chart">Aucune donnée disponible pour le graphique.</string>
+    <string name="fertility_status">Statut de fertilité</string>
+    <string name="temp_shift">Décalage thermique : %s</string>
+    <string name="mucus_peak">Pic de glaire : %s</string>
+    <string name="peak_day_label">Jour Pic : %s</string>
+    <string name="confirmed">Confirmé ✅</string>
+    <string name="not_detected">Non détecté ❌</string>
+
+    <!-- Logging -->
+    <string name="daily_log_title">Journal quotidien - %s</string>
+    <string name="delete_log">Supprimer l\'entrée</string>
+    <string name="change_date">Changer la date</string>
+    <string name="confirm">Confirmer</string>
+    <string name="entry_type">Type d\'entrée</string>
+    <string name="regular">Régulier</string>
+    <string name="bbt_c">Température basale (°C)</string>
+    <string name="bbt_f">Température basale (°F)</string>
+    <string name="flow_level">Flux</string>
+    <string name="pain_level">Douleur</string>
+    <string name="mucus_consistency">Consistance de la glaire</string>
+    <string name="mucus_sensation">Sensation de la glaire</string>
+    <string name="poor_sleep">Sommeil médiocre</string>
+    <string name="alcohol">Alcool</string>
+    <string name="stress">Stress</string>
+    <string name="illness">Maladie</string>
+    <string name="travel">Voyage</string>
+    <string name="notes">Notes</string>
+    <string name="delete_dialog_title">Supprimer l\'entrée ?</string>
+    <string name="delete_dialog_text">Êtes-vous sûr de vouloir supprimer cette entrée ? Cette action est irréversible.</string>
+    <string name="cancel">Annuler</string>
+    <string name="delete">Supprimer</string>
+    <string name="ok">OK</string>
+    <string name="egg_white">Blanc d\'œuf</string>
+    <string name="none">Aucun</string>
+    <string name="disturbances">Perturbations</string>
+</resources>

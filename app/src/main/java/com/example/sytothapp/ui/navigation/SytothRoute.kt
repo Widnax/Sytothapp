@@ -18,4 +18,7 @@ sealed interface SytothRoute : NavKey {
 
     @Serializable
     data object Chart : SytothRoute
+
+    @Serializable
+    data object Settings : SytothRoute
 }
