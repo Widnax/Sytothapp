@@ -1,5 +1,5 @@
 # Sytothapp 🌡️📅
-
+# Not finished !!
 **A Privacy-Focused Sympto-Thermal Method (STM) Tracker for Android**
 
 Sytothapp is an open-source Android application designed to empower users with **fertility awareness** through the **Sympto-Thermal Method (STM)**. It prioritizes **privacy, accuracy, and simplicity**, helping users track their menstrual cycles, basal body temperature (BBT), cervical mucus, and other fertility indicators to identify their **fertile window** with confidence.
