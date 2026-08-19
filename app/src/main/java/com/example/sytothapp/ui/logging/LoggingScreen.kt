@@ -1,5 +1,6 @@
 package com.example.sytothapp.ui.logging
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sytothapp.data.local.entity.*
@@ -104,66 +106,183 @@ fun LoggingScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Mucus Consistency
-                Text("Mucus Consistency", style = MaterialTheme.typography.titleMedium)
-                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                    MucusConsistency.entries.forEachIndexed { index, consistency ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = MucusConsistency.entries.size),
-                            onClick = { viewModel.updateMucusConsistency(consistency) },
-                            selected = currentEntry.mucusConsistency == consistency
-                        ) {
-                            Text(
-                                when (consistency) {
-                                    MucusConsistency.EGG_WHITE -> "Egg white"
-                                    MucusConsistency.NONE -> "None"
-                                    else -> consistency.name.lowercase().replaceFirstChar { it.uppercase() }
-                                }
-                            )
-                        }
+                // Period Toggle
+                Text("Entry Type", style = MaterialTheme.typography.titleMedium)
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                        onClick = { viewModel.updateIsPeriod(false) },
+                        selected = !currentEntry.isPeriod
+                    ) {
+                        Text("Regular")
+                    }
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                        onClick = { viewModel.updateIsPeriod(true) },
+                        selected = currentEntry.isPeriod
+                    ) {
+                        Text("Period")
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Mucus Sensation
-                Text("Mucus Sensation", style = MaterialTheme.typography.titleMedium)
-                SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                    MucusSensation.entries.forEachIndexed { index, sensation ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(index = index, count = MucusSensation.entries.size),
-                            onClick = { viewModel.updateMucusSensation(sensation) },
-                            selected = currentEntry.mucusSensation == sensation
+                if (currentEntry.isPeriod) {
+                    // Flow Level
+                    Text("Flow Level", style = MaterialTheme.typography.titleMedium)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                    ) {
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.padding(vertical = 8.dp)
                         ) {
-                            Text(
-                                when (sensation) {
-                                    MucusSensation.NONE -> "None"
-                                    else -> sensation.name.lowercase().replaceFirstChar { it.uppercase() }
+                            FlowLevel.entries.forEachIndexed { index, flow ->
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = FlowLevel.entries.size
+                                    ),
+                                    onClick = { viewModel.updateFlow(flow) },
+                                    selected = currentEntry.flow == flow
+                                ) {
+                                    Text(
+                                        text = flow.name.lowercase().replaceFirstChar { it.uppercase() },
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
                                 }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Disturbances
-                Text("Disturbances", style = MaterialTheme.typography.titleMedium)
-                val commonDisturbances = listOf("Poor Sleep", "Alcohol", "Stress", "Illness", "Travel")
-                commonDisturbances.forEach { disturbance ->
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = currentEntry.disturbances.contains(disturbance),
-                            onCheckedChange = { checked ->
-                                val newList = if (checked) {
-                                    currentEntry.disturbances + disturbance
-                                } else {
-                                    currentEntry.disturbances - disturbance
-                                }
-                                viewModel.updateDisturbances(newList)
                             }
-                        )
-                        Text(disturbance, modifier = Modifier.padding(start = 8.dp))
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Pain Level
+                    Text("Pain Level", style = MaterialTheme.typography.titleMedium)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                    ) {
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            PainLevel.entries.forEachIndexed { index, pain ->
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = PainLevel.entries.size
+                                    ),
+                                    onClick = { viewModel.updatePain(pain) },
+                                    selected = currentEntry.pain == pain
+                                ) {
+                                    Text(
+                                        text = pain.name.lowercase().replaceFirstChar { it.uppercase() },
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Mucus Consistency
+                    Text("Mucus Consistency", style = MaterialTheme.typography.titleMedium)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                    ) {
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            MucusConsistency.entries.forEachIndexed { index, consistency ->
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = MucusConsistency.entries.size
+                                    ),
+                                    onClick = { viewModel.updateMucusConsistency(consistency) },
+                                    selected = currentEntry.mucusConsistency == consistency
+                                ) {
+                                    Text(
+                                        text = when (consistency) {
+                                            MucusConsistency.EGG_WHITE -> "Egg white"
+                                            MucusConsistency.NONE -> "None"
+                                            else -> consistency.name.lowercase()
+                                                .replaceFirstChar { it.uppercase() }
+                                        },
+                                        style = MaterialTheme.typography.labelSmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Visible,
+                                        softWrap = false
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Mucus Sensation
+                    Text("Mucus Sensation", style = MaterialTheme.typography.titleMedium)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                    ) {
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            MucusSensation.entries.forEachIndexed { index, sensation ->
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = MucusSensation.entries.size
+                                    ),
+                                    onClick = { viewModel.updateMucusSensation(sensation) },
+                                    selected = currentEntry.mucusSensation == sensation
+                                ) {
+                                    Text(
+                                        text = when (sensation) {
+                                            MucusSensation.NONE -> "None"
+                                            else -> sensation.name.lowercase()
+                                                .replaceFirstChar { it.uppercase() }
+                                        },
+                                        style = MaterialTheme.typography.labelSmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Visible,
+                                        softWrap = false
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Disturbances
+                    Text("Disturbances", style = MaterialTheme.typography.titleMedium)
+                    val commonDisturbances = listOf("Poor Sleep", "Alcohol", "Stress", "Illness", "Travel")
+                    commonDisturbances.forEach { disturbance ->
+                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = currentEntry.disturbances.contains(disturbance),
+                                onCheckedChange = { checked ->
+                                    val newList = if (checked) {
+                                        currentEntry.disturbances + disturbance
+                                    } else {
+                                        currentEntry.disturbances - disturbance
+                                    }
+                                    viewModel.updateDisturbances(newList)
+                                }
+                            )
+                            Text(disturbance, modifier = Modifier.padding(start = 8.dp))
+                        }
                     }
                 }
 

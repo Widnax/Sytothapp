@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.example.sytothapp.data.local.dao.DailyEntryDao
 import com.example.sytothapp.data.local.entity.DailyEntry
 
-@Database(entities = [DailyEntry::class], version = 1, exportSchema = false)
+@Database(entities = [DailyEntry::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class SytothDatabase : RoomDatabase() {
     abstract fun dailyEntryDao(): DailyEntryDao
@@ -23,7 +23,9 @@ abstract class SytothDatabase : RoomDatabase() {
                     context.applicationContext,
                     SytothDatabase::class.java,
                     DATABASE_NAME
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

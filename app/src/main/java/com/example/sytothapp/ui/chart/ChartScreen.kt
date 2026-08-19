@@ -212,6 +212,19 @@ fun CycleChart(
             color = theme.primary,
             style = Stroke(width = 2.dp.toPx())
         )
+
+        // Draw Period Markers at the bottom
+        entries.forEachIndexed { index, entry ->
+            if (entry.isPeriod) {
+                val x = padding + index * stepX + 2.dp.toPx()
+                val y = chartHeight + padding - 5.dp.toPx()
+                drawRect(
+                    color = Color.Red.copy(alpha = 0.6f),
+                    topLeft = Offset(x, y),
+                    size = Size(stepX - 4.dp.toPx(), 6.dp.toPx())
+                )
+            }
+        }
         
         // Draw Mucus Markers at the bottom
         entries.forEachIndexed { index, entry ->

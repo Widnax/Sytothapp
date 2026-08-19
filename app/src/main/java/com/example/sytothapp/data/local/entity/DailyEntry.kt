@@ -18,8 +18,21 @@ data class DailyEntry(
     val cervicalPosition: CervicalPosition? = null,
     val cervicalFirmness: CervicalFirmness? = null,
     val cervicalOpening: CervicalOpening? = null,
-    val notes: String = ""
+    val notes: String = "",
+    val isPeriod: Boolean = false,
+    val flow: FlowLevel? = null,
+    val pain: PainLevel? = null
 )
+
+@Serializable
+enum class FlowLevel {
+    SPOTTING, LIGHT, MEDIUM, HEAVY
+}
+
+@Serializable
+enum class PainLevel {
+    NONE, MILD, MODERATE, SEVERE
+}
 
 @Serializable
 enum class MucusConsistency {

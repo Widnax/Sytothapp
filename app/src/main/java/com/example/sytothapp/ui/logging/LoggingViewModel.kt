@@ -83,6 +83,21 @@ class LoggingViewModel(private val repository: CycleRepository) : ViewModel() {
         saveEntry()
     }
 
+    fun updateIsPeriod(isPeriod: Boolean) {
+        _entry.value = _entry.value?.copy(isPeriod = isPeriod)
+        saveEntry()
+    }
+
+    fun updateFlow(flow: FlowLevel?) {
+        _entry.value = _entry.value?.copy(flow = flow)
+        saveEntry()
+    }
+
+    fun updatePain(pain: PainLevel?) {
+        _entry.value = _entry.value?.copy(pain = pain)
+        saveEntry()
+    }
+
     fun updateCervix(
         position: CervicalPosition? = _entry.value?.cervicalPosition,
         firmness: CervicalFirmness? = _entry.value?.cervicalFirmness,
