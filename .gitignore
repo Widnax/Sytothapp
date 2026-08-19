@@ -1,0 +1,50 @@
+# Built objects
+bin/
+gen/
+obj/
+
+# Gradle
+.gradle/
+build/
+*.main.kts
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+.idea/shelf
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/navEditor.xml
+.idea/modules.xml
+
+# Local configuration
+local.properties
+.sdk
+
+# Log files
+*.log
+
+# Keystore files
+*.jks
+*.keystore
+
+# External native build
+.externalNativeBuild/
+.cxx/
+
+# Google Services
+google-services.json
+
+# Capture and performance files
+/captures/
+
+# Others
+.DS_Store
+
+# Agent metadata
+.agent/
